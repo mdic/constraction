@@ -479,6 +479,14 @@ proc storePositions(db: DbConn, analyzer: PatternAnalyzer, sp: ScoredPattern) =
 proc minePatterns(json_path: string, output_folder: string,
         config: JsonNode, store_in_database: bool = false,
         task_id: int = -1) {.exportpy.} =
+    echo "Starting minePatterns"
+    echo "json_path: ", json_path
+    echo "output_folder: ", output_folder
+    echo "store_in_database: ", store_in_database
+    echo "task_id: ", task_id
+
+    # Debugging config
+    echo "Config: ", config.pretty()
     var corpus = loadJson(json_path)
     var db_path = joinPath(output_folder, "db.sqlite3")
     var db: DbConn

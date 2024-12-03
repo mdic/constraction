@@ -83,10 +83,14 @@ proc storeTokensInDatabase*(corpus: Corpus, db_path: string) =
     try:
         db.exec(sql"BEGIN TRANSACTION;")
         for sentence in corpus.sentences:
-            db.exec(sql"INSERT INTO sentence (id, file_name) VALUES (?,?);", sentence.id, sentence.file_name)
-            for token in sentence.tokens:
-                var cmd = sql"INSERT INTO token (id, sentence_id, text, lemma, upos, xpos, deprel, supersense, head_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                db.exec(cmd, token.id, sentence.id, token.text, token.lemma, token.upos, token.xpos, token.deprel, token.supersense, token.head_id)
+          # add debug log to print if duplicate sentences ID are detected
+            try:
+              db.exec(sql"INSERT INTO sentence (id, file_name) VALUES (?,?);", sentence.id, sentence.file_name)
+              for token in sentence.tokens:
+                  var cmd = sql"INSERT INTO token (id, sentence_id, text, lemma, upos, xpos, deprel, supersense, head_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                  db.exec(cmd, token.id, sentence.id, token.text, token.lemma, token.upos, token.xpos, token.deprel, token.supersense, token.head_id)
+            except DbError as e:
+              echo "Duplicate sentence id detected: ", sentence.id
         db.exec(sql"COMMIT;")
     except:
         db.close()
@@ -101,7 +105,9 @@ proc getTableCreationSQL(table_name: string, row: JsonNode): string =
         if i != row_keys.len - 1:
             table_info &= ", "
     if "id" notin row:
-        table_info = "id INTEGER PRIMARY KEY, " & table_info
+        # use progressive numbers as IDs to avoid duplicates
+        table_info = "id INTEGER PRIMARY KEY AUTOINCREMENT, " & table_info
+        # table_info = "id INTEGER PRIMARY KEY, " & table_info
     var cmd = fmt"CREATE TABLE IF NOT EXISTS {table_name} ({table_info})"
     return cmd
 
