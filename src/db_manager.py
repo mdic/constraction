@@ -24,7 +24,7 @@ class Pattern(SQLModel, table=True):
     right: str  # the right component of the form
     count: int
     score: float
-    task_id: int = Field(index=True, foreign_key=Task.id)
+    task_id: int = Field(index=True, foreign_key="task.id")
 
 
 class Sentence(SQLModel, table=True):
@@ -34,7 +34,7 @@ class Sentence(SQLModel, table=True):
 
 class Position(SQLModel, table=True):
     id: int = Field(primary_key=True)
-    pattern_id: int = Field(index=True, foreign_key=Pattern.id)
+    pattern_id: int = Field(index=True, foreign_key="pattern.id")
     sentence_id: int = Field(index=True)
     token_ids: str
 
@@ -75,7 +75,7 @@ class DBManager:
 
     def new_task(self, name, config):
         with Session(self.engine) as session:
-            task = Task(name=name, config=json.dumps(config), 
+            task = Task(name=name, config=json.dumps(config),
                     time_added=datetime.datetime.now())
             session.add(task)
             session.commit()
