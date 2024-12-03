@@ -9,3 +9,4 @@ projects/
 learner/mining
 .gitignore
 TODO.txt
+.ropeproject/
