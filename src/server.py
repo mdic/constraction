@@ -53,7 +53,7 @@ def annotation_page():
             folder_name = st.selectbox("Select an existing project to work with", projects)
             if st.button("Open project"):
                 st.session_state.project = {
-                    'title': folder_name, 
+                    'title': folder_name,
                     'folder': os.path.join(project_data_folder, folder_name)
                 }
                 st.success("Project opened")
@@ -77,7 +77,7 @@ def mine_patterns(name, config):
     folder = st.session_state.project['folder']
     json_path = os.path.join(folder, "corpus.json")
     task_id = manager.new_task(name, config)
-    mining.mine_patterns(json_path, folder, config, store_in_database=True, task_id=task_id)
+    mining.minePatterns(json_path, folder, config, store_in_database=True, task_id=task_id)
 
 def extraction_page():
     token_type_mapping = {"coarse-grained POS": "upos", "fine-grained POS": "xpos"}
@@ -232,7 +232,7 @@ def explore_page():
                     max_lines = st.number_input("Max lines", value=3, step=1, key=f"max_lines{i}")
                 with mid:
                     show_stats = st.selectbox("Show stats", ["No", "Yes"], key=f"show_stats{i}") == "Yes"
-                show_pattern_in_context(manager, row['form'], max_n=max_lines, 
+                show_pattern_in_context(manager, row['form'], max_n=max_lines,
                 show_stats=show_stats, key=f'context{i}')
 
 
